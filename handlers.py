@@ -2,6 +2,8 @@ import database as db
 from config import ROOT_URL, KEY
 from datetime import datetime
 
+
+
 def xor(value: int, key: int) -> int:
     return value ^ key  # XOR operation
 
@@ -24,7 +26,7 @@ async def handle_chat_start(anon_id: str) -> str:
         return f"```[error]{e}```"
 
 
-async def reply_to_chat(last_text, chat_id, text) -> tuple[int, str]:
+async def reply_to_chat(last_text: str, chat_id: int, text: str) -> tuple[int, str]:
     target_id: str = str(xor(
         int(
             last_text.split("]")[1]
@@ -33,5 +35,6 @@ async def reply_to_chat(last_text, chat_id, text) -> tuple[int, str]:
         KEY
     ))
     chat_code: str = str(xor(chat_id, KEY))
-    txt: str = f"```[{datetime.now().strftime("%Y/%m/%d-%H:%M:%S")}]{chat_code}```\n{text}"
+    new_date_and_code: str = f"```[{datetime.now().strftime("%Y/%m/%d-%H:%M:%S")}]{chat_code}```"
+    txt: str = new_date_and_code + "\nYou have a new message:\n\n" + text
     return target_id, txt

@@ -9,8 +9,7 @@ from sqlalchemy import (
 from sqlalchemy.orm import (
     sessionmaker,
     # relationship,
-    DeclarativeMeta,
-    declarative_base
+    DeclarativeBase
 )
 from sqlalchemy.ext.asyncio import (
     AsyncSession,
@@ -22,7 +21,7 @@ import uuid
 import typing as t
 
 
-Base: t.Type[DeclarativeMeta] = declarative_base()
+
 engine: AsyncEngine = create_async_engine(f"sqlite+aiosqlite:///{DATABASE_URI}", echo=True)
 SessionLocal: sessionmaker[AsyncSession] = sessionmaker(bind=engine, class_=AsyncSession, expire_on_commit=False)
 
@@ -30,6 +29,10 @@ SessionLocal: sessionmaker[AsyncSession] = sessionmaker(bind=engine, class_=Asyn
 def generate_anon_id() -> str:
     """generate anonymous ID for users"""
     return str(uuid.uuid4())[:8]
+
+
+class Base(DeclarativeBase):
+    pass
 
 
 class User(Base):
@@ -45,15 +48,8 @@ class User(Base):
         self.bale_id = baleid
         self.chat_id = chatid
 
-    def __repr__(self) -> dict[str, str]:
-        return {
-            'anonid': str(self.anon_id),
-            'baleid': str(self.bale_id),
-            'chatid': str(self.chat_id)
-        }
-
-    def __str__(self) -> str:
-        return f"<user {self.anon_id}>"
+    def __repr__(self) -> str:
+        return f"User(anon_id={self.anon_id}, bale_id={self.bale_id})"
 
 
 async def init_db() -> None:

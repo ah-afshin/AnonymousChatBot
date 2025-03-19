@@ -5,12 +5,17 @@ from database import init_db
 import handlers
 
 
+
 async def send_message(chat_id: int, text: str) -> dict[str, t.Any]:
     send_api: str = URL + "sendMessage"
-    data: dict[str, str] = {'chat_id': str(chat_id), 'text': text}
+    data: dict[str, str] = {
+            'chat_id': str(chat_id),
+            'text': text,
+            'parse_mode': 'MarkdownV2' # add markdown support (Telegram)
+        }
 
     async with aiohttp.ClientSession() as session:
-        async with session.post(send_api, data=data) as response:
+        async with session.post(send_api, json=data) as response:
             return await response.json()
 
 
